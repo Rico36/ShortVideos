@@ -26,6 +26,7 @@ body {
 }
 .wrap { max-width: 44rem; margin: 0 auto; padding: 3rem 1.25rem 5rem; }
 header { border-bottom: 1px solid var(--rule); padding-bottom: 1.25rem; margin-bottom: 2rem; }
+.mark { display: block; width: 44px; height: 44px; border-radius: 10px; margin-bottom: .9rem; }
 h1 { font-size: 1.75rem; line-height: 1.25; margin: 0 0 .35rem; letter-spacing: -.01em; }
 h2 { font-size: 1.1rem; margin: 2.25rem 0 .6rem; letter-spacing: -.005em; }
 h3 { font-size: .95rem; margin: 1.5rem 0 .4rem; }

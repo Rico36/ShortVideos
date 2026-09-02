@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+     width="512" height="512" role="img" aria-label="CommonHours">
+  <rect width="512" height="512" fill="#1F5C4A"/>
+  <g stroke="#FBFAF8" stroke-linecap="round">
+    <line x1="256.0" y1="100.0" x2="256.0" y2="60.0" stroke-width="26"/>
+    <line x1="342.0" y1="107.0" x2="354.0" y2="86.3" stroke-width="16"/>
+    <line x1="405.0" y1="170.0" x2="425.7" y2="158.0" stroke-width="16"/>
+    <line x1="412.0" y1="256.0" x2="452.0" y2="256.0" stroke-width="26"/>
+    <line x1="405.0" y1="342.0" x2="425.7" y2="354.0" stroke-width="16"/>
+    <line x1="342.0" y1="405.0" x2="354.0" y2="425.7" stroke-width="16"/>
+    <line x1="256.0" y1="412.0" x2="256.0" y2="452.0" stroke-width="26"/>
+    <line x1="170.0" y1="405.0" x2="158.0" y2="425.7" stroke-width="16"/>
+    <line x1="107.0" y1="342.0" x2="86.3" y2="354.0" stroke-width="16"/>
+    <line x1="100.0" y1="256.0" x2="60.0" y2="256.0" stroke-width="26"/>
+    <line x1="107.0" y1="170.0" x2="86.3" y2="158.0" stroke-width="16"/>
+    <line x1="170.0" y1="107.0" x2="158.0" y2="86.3" stroke-width="16"/>
+  </g>
+  <path d="M 214 168 L 214 344 L 352 256 Z" fill="#FBFAF8"
+        stroke="#FBFAF8" stroke-width="28" stroke-linejoin="round"/>
+</svg>
