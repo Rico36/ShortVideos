@@ -346,6 +346,105 @@ class ProbeTests(unittest.TestCase):
             self._probe_with('{"format": {}, "streams": []}', size=0)
 
 
+class TikTokPreflightTests(unittest.TestCase):
+    """Preflight must exercise every scope the app asks TikTok for."""
+
+    def build(self, user_payload=None, creator_payload=None):
+        from unittest import mock
+        from socialpost.platforms.tiktok import TikTokPublisher
+
+        publisher = object.__new__(TikTokPublisher)
+        publisher.config = load_config(BASE_CONFIG)
+        publisher.media = good_media()
+        publisher.options = publisher.config.platforms["tiktok"]
+        publisher.log = lambda *a: None
+        publisher.creator_info = {}
+        publisher.user_info = {}
+        publisher._last_call = 0.0
+        publisher.tokens = mock.Mock(**{"access_token.return_value": "tok"})
+
+        user = user_payload if user_payload is not None else {
+            "data": {"user": {"open_id": "abc", "display_name": "Ricky F",
+                              "avatar_url": "https://x/y.jpg"}},
+            "error": {"code": "ok"},
+        }
+        creator = creator_payload if creator_payload is not None else {
+            "data": {"creator_nickname": "Ricky F", "creator_username": "rickyf",
+                     "privacy_level_options": ["PUBLIC_TO_EVERYONE", "SELF_ONLY"],
+                     "comment_disabled": False, "duet_disabled": True,
+                     "stitch_disabled": False, "max_video_post_duration_sec": 600},
+            "error": {"code": "ok"},
+        }
+
+        def response(payload):
+            r = mock.Mock(); r.status_code = 200; r.content = b"{}"
+            r.json.return_value = payload
+            return r
+
+        self.get = mock.Mock(return_value=response(user))
+        self.post = mock.Mock(return_value=response(creator))
+        return publisher, mock.patch.multiple(
+            "socialpost.platforms.tiktok.requests", get=self.get, post=self.post
+        )
+
+    def test_preflight_calls_user_info_and_creator_info(self):
+        from unittest import mock
+        publisher, patched = self.build()
+        with patched, mock.patch("socialpost.platforms.tiktok.time.sleep"):
+            notes = publisher.preflight()
+
+        # user.info.basic is genuinely exercised, not just requested.
+        self.assertEqual(self.get.call_count, 1)
+        url, kwargs = self.get.call_args[0][0], self.get.call_args[1]
+        self.assertEqual(url, "https://open.tiktokapis.com/v2/user/info/")
+        self.assertIn("display_name", kwargs["params"]["fields"])
+        self.assertEqual(kwargs["headers"]["Authorization"], "Bearer tok")
+
+        self.assertEqual(self.post.call_count, 1)
+        self.assertIn("creator_info/query", self.post.call_args[0][0])
+
+        self.assertIn("authorized account: Ricky F", notes[0])
+        self.assertTrue(any("rickyf" in n for n in notes))
+        self.assertTrue(any("duet disabled" in n for n in notes))
+
+    def test_creator_settings_override_the_config(self):
+        from unittest import mock
+        publisher, patched = self.build()
+        with patched, mock.patch("socialpost.platforms.tiktok.time.sleep"):
+            publisher.preflight()
+        post_info = publisher._post_info()
+        # Config says allow_duet, but the account has duet off. Account wins.
+        self.assertTrue(publisher.options.get("allow_duet", True))
+        self.assertTrue(post_info["disable_duet"])
+        self.assertFalse(post_info["disable_comment"])
+
+    def test_unaudited_app_is_named_not_silently_downgraded(self):
+        from unittest import mock
+        from socialpost.platforms.base import PublishError
+        publisher, patched = self.build(creator_payload={
+            "data": {"creator_nickname": "R", "creator_username": "r",
+                     "privacy_level_options": ["SELF_ONLY"]},
+            "error": {"code": "ok"},
+        })
+        publisher.options.options["privacy_level"] = "PUBLIC_TO_EVERYONE"
+        with patched, mock.patch("socialpost.platforms.tiktok.time.sleep"):
+            with self.assertRaises(PublishError) as ctx:
+                publisher.preflight()
+        self.assertIn("audit", str(ctx.exception).lower())
+
+    def test_error_inside_a_200_response_is_raised(self):
+        from unittest import mock
+        from socialpost.platforms.base import PublishError
+        publisher, patched = self.build(user_payload={
+            "data": {}, "error": {"code": "access_token_invalid",
+                                  "message": "token expired", "log_id": "123"},
+        })
+        with patched, mock.patch("socialpost.platforms.tiktok.time.sleep"):
+            with self.assertRaises(PublishError) as ctx:
+                publisher.preflight()
+        self.assertIn("access_token_invalid", str(ctx.exception))
+
+
 class TikTokChunkingTests(unittest.TestCase):
     """TikTok requires 5-64 MB chunks, <=1000 of them, covering the file exactly."""
 

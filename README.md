@@ -101,8 +101,10 @@ python3 -m socialpost.authorize tiktok --redirect-uri https://your.domain/callba
 # add --draft-only to request video.upload instead of video.publish
 ```
 
-Before every post the tool calls `creator_info/query`, as TikTok's Content
-Sharing Guidelines require, and honours what comes back: if you have disabled
+Before every post the tool calls `/v2/user/info/` and shows which account was
+authorized - posting is irreversible, so you see the target first. That is the
+only use of the `user.info.basic` scope. It then calls `creator_info/query`, as
+TikTok's Content Sharing Guidelines require, and honours what comes back: if you have disabled
 comments, duet or stitch on your account, the post respects that regardless of
 what the config says. Rate limit is 6 requests per minute per token, so calls
 are spaced 10 seconds apart.
@@ -238,7 +240,7 @@ goes live.
 ```
 post_video.py              entry point
 config.example.yaml        annotated template
-tests.py                   41 offline tests, no network or credentials
+tests.py                   45 offline tests, no network or credentials
 socialpost/
   config.py                config parsing; disclosure fields with no defaults
   media.py                 ffprobe wrapper, rotation-aware

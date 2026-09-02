@@ -1,6 +1,10 @@
 """TikTok Content Posting API v2.
 
 Two modes:
+Before either, /v2/user/info/ confirms which account was authorized - posting
+is irreversible, so the operator sees the target account first. That is the
+only use of the user.info.basic scope.
+
   direct  /v2/post/publish/video/init/        scope video.publish - posts live
   draft   /v2/post/publish/inbox/video/init/  scope video.upload  - lands in the
           creator's TikTok inbox for them to finish and post by hand
@@ -22,6 +26,7 @@ import requests
 from ..policy import TIKTOK, TIKTOK_TITLE_LIMIT
 from .base import TIMEOUT, PostResult, PublishError, Publisher, raise_for
 
+USER_INFO = "https://open.tiktokapis.com/v2/user/info/"
 BASE = "https://open.tiktokapis.com/v2/post/publish"
 CREATOR_INFO = f"{BASE}/creator_info/query/"
 DIRECT_INIT = f"{BASE}/video/init/"
@@ -42,6 +47,7 @@ class TikTokPublisher(Publisher):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.creator_info: dict = {}
+        self.user_info: dict = {}
         self._last_call = 0.0
 
     def _headers(self) -> dict:
@@ -56,10 +62,19 @@ class TikTokPublisher(Publisher):
             time.sleep(REQUEST_SPACING_S - elapsed)
         self._last_call = time.time()
 
+    def _get(self, url: str, params: dict, what: str) -> dict:
+        self._throttle()
+        response = requests.get(url, headers=self._headers(), params=params, timeout=TIMEOUT)
+        return self._unwrap(raise_for(response, what), what)
+
     def _post(self, url: str, payload: dict, what: str) -> dict:
         self._throttle()
         response = requests.post(url, headers=self._headers(), json=payload, timeout=TIMEOUT)
-        body = raise_for(response, what)
+        return self._unwrap(raise_for(response, what), what)
+
+    @staticmethod
+    def _unwrap(body: dict, what: str) -> dict:
+        """TikTok reports failures inside a 200 response, so check error.code."""
         error = (body.get("error") or {})
         if error.get("code") not in (None, "ok"):
             raise PublishError(
@@ -69,10 +84,18 @@ class TikTokPublisher(Publisher):
         return body.get("data") or {}
 
     def preflight(self) -> list[str]:
-        """Read the creator's settings and check the request against them."""
+        """Confirm the account, then read its settings and check the request."""
+        # Posting is irreversible, so confirm which account was authorized
+        # before anything is uploaded. This is what user.info.basic is for.
+        user = self._get(
+            USER_INFO, {"fields": "open_id,display_name,avatar_url"}, "TikTok user info"
+        ).get("user") or {}
+        self.user_info = user
+        notes = [f"authorized account: {user.get('display_name', 'unknown')}"]
+
         self.creator_info = self._post(CREATOR_INFO, {}, "TikTok creator_info")
         info = self.creator_info
-        notes = [f"creator: {info.get('creator_nickname')} (@{info.get('creator_username')})"]
+        notes.append(f"creator: {info.get('creator_nickname')} (@{info.get('creator_username')})")
 
         options = info.get("privacy_level_options") or []
         wanted = str(self.options.get("privacy_level", "SELF_ONLY")).upper()
