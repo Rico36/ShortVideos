@@ -1,0 +1,4 @@
+# Minimal on purpose: this is meant to run on the same Raspberry Pi as Home
+# Assistant. No Google/Meta/TikTok SDKs - every call is plain HTTPS.
+requests>=2.31
+PyYAML>=6.0
