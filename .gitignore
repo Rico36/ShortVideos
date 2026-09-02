@@ -1,0 +1,8 @@
+# Real configs stay local; the annotated template is committed.
+config*.yaml
+!config.example.yaml
+
+clips/
+tokens.json
+__pycache__/
+*.pyc

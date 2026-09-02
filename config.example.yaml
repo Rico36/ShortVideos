@@ -1,0 +1,86 @@
+# Copy to config.yaml and edit. config.yaml is gitignored - this file is not,
+# so keep real captions and ids out of it.
+#
+# ${VAR} anywhere in this file is replaced with that environment variable, so
+# secrets never have to be written down here.
+
+video:
+  # Absolute path, or relative to this config file.
+  path: ./clips/goat-mowing.mp4
+  # Optional still used as the YouTube thumbnail (<=2 MB).
+  cover: ./clips/goat-cover.jpg
+  # Frame used for the TikTok cover and the Instagram thumbnail.
+  cover_timestamp_ms: 1500
+
+content:
+  # YouTube title. <=100 chars, no < or >.
+  title: "The GOAT A3000 mows a 300 m2 lawn in 40 minutes"
+  # Instagram + TikTok body. Falls back to the title if omitted.
+  caption: |
+    Full LiDAR mapping run, no boundary wire.
+    Home Assistant kicks it off automatically once the dew has burned off.
+  # YouTube description. Falls back to the caption if omitted.
+  description: |
+    The Ecovacs GOAT A3000 running a scheduled zone mow, started from Home
+    Assistant. Patches and automations: github.com/rico36/Ecovacs-Goat-A3000-Mower
+  # Written without the '#'. Trimmed per platform (Instagram takes 30).
+  hashtags: [robotmower, ecovacs, goata3000, homeassistant, smarthome, lawncare]
+  language: en
+
+# Every field below is required and has no default. Each one maps to a legal or
+# platform-policy obligation, so the tool will not guess on your behalf.
+disclosure:
+  # true if any part is AI-generated, voice-cloned, or materially altered.
+  # Sets containsSyntheticMedia on YouTube and is_aigc on TikTok.
+  synthetic_media: false
+
+  # COPPA. true only if the video is directed at children.
+  made_for_kids: false
+
+  # Set true once you have watched the clip back and confirmed there are no
+  # other people's faces, no neighbours' house numbers, no licence plates and
+  # no audible private conversation.
+  privacy_review_confirmed: false
+
+  branded_content:
+    enabled: false
+    own_brand: false      # promoting your own business
+    third_party: false    # paid partnership with someone else
+    partner: ""
+
+  music:
+    # original       - your own audio or the mower's own sound
+    # licensed       - third-party music you hold a licence for
+    # none           - no music
+    # platform_library - blocked: API uploads cannot attach library audio
+    source: original
+    license_ref: ""
+
+platforms:
+  youtube:
+    enabled: true
+    short: true              # false uploads it as a normal video instead
+    privacy_status: private  # public | unlisted | private - start private
+    category_id: "28"        # 28 = Science & Technology, 26 = Howto & Style
+    license: youtube         # or creativeCommon
+    embeddable: true
+
+  tiktok:
+    enabled: true
+    # direct = posts live (needs the video.publish scope and an audited app)
+    # draft  = lands in your TikTok inbox to finish by hand (video.upload)
+    mode: draft
+    # Unaudited apps can only use SELF_ONLY.
+    privacy_level: SELF_ONLY
+    allow_comment: true
+    allow_duet: true
+    allow_stitch: true
+
+  instagram:
+    enabled: true
+    # From: python3 -m socialpost.authorize instagram
+    ig_user_id: "${IG_USER_ID}"
+    share_to_feed: true
+
+# Records what has been posted so a cron retry cannot double-post.
+state_file: ~/.local/state/socialpost/posted.json
