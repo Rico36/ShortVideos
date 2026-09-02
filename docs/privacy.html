@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — CommonHours</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Privacy Policy</h1>
+  <p class="lede">CommonHours</p>
+  <p class="meta">Effective 2 September 2026</p>
+</header>
+
+<h2>Summary</h2>
+<div class="card">
+  <p style="margin:0">CommonHours runs entirely on your own computer. It has no
+  servers and no operator-side storage. It does not collect, transmit, sell or
+  share your personal information with anyone. The only network destinations it
+  contacts are the official APIs of the platforms you have authorized.</p>
+</div>
+
+<h2>1. Who this covers</h2>
+<p>CommonHours is software you download and run yourself. In this policy,
+"you" means the person running it. There is no CommonHours company, service, or
+hosted product that receives your data.</p>
+
+<h2>2. What is stored, and where</h2>
+<p>All of the following is stored only on the computer where you run CommonHours.
+None of it is transmitted to the author of the software or to any third party.</p>
+
+<h3>Authorization tokens</h3>
+<p>When you connect a TikTok account, the access token and refresh token TikTok
+issues are written to a file in your home directory
+(<code>~/.config/socialpost/tokens.json</code>), with filesystem permissions that
+restrict it to your own user account. These tokens are used only to authenticate
+your uploads to TikTok.</p>
+
+<h3>Posting history</h3>
+<p>A local file records a cryptographic hash of each video you have posted, the
+platform, the resulting post ID, and a timestamp. This exists so that a repeated
+or automated run cannot publish the same video twice. It contains no personal
+information.</p>
+
+<h3>Your videos and captions</h3>
+<p>Video files and captions stay on your machine until you choose to post, at
+which point they are uploaded to the platform you selected. CommonHours keeps no
+copy beyond the file you already had.</p>
+
+<h2>3. Information received from TikTok</h2>
+<p>Before each post, CommonHours calls TikTok's Creator Info endpoint. TikTok
+returns your account nickname and username, the privacy levels available to your
+account, whether comments, duet and stitch are enabled, and your maximum allowed
+video duration.</p>
+<p>This information is used immediately, in memory, to build a valid post request
+and to respect your account settings. It is displayed to you in your terminal and
+is <strong>not</strong> written to disk, retained after the program exits, or sent
+anywhere.</p>
+
+<h2>4. What is never done</h2>
+<ul>
+  <li>No data is sold, rented, or shared with advertisers or data brokers.</li>
+  <li>No analytics, telemetry, crash reporting, or usage tracking of any kind.</li>
+  <li>No TikTok content or account data is scraped, indexed, aggregated, or
+      republished elsewhere.</li>
+  <li>No content is posted to any account other than one you have explicitly
+      authorized on your own machine.</li>
+  <li>No advertising or automated decision-making is performed on your data.</li>
+</ul>
+
+<h2>5. This website</h2>
+<p>These pages are static files served by GitHub Pages. They set no cookies, run
+no analytics, and load no third-party trackers. GitHub may log requests to its own
+servers as described in
+<a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's
+privacy statement</a>; that is outside the control of CommonHours.</p>
+
+<h2>6. Retention and deletion</h2>
+<p>Because all data is local, you control it completely. To remove everything:</p>
+<ul>
+  <li>Delete <code>~/.config/socialpost/tokens.json</code> to remove stored
+      authorization tokens.</li>
+  <li>Delete <code>~/.local/state/socialpost/posted.json</code> to remove the
+      posting history.</li>
+  <li>Revoke the app's access from your TikTok account settings, under
+      Security and permissions, to invalidate any token that already exists.</li>
+  <li>Delete the program directory to remove the software.</li>
+</ul>
+<p>No request to anyone is needed, because no one else holds a copy.</p>
+
+<h2>7. Children</h2>
+<p>CommonHours is not directed at children and is not intended for use by anyone
+under the age required by the platforms it connects to.</p>
+
+<h2>8. Changes</h2>
+<p>If this policy changes, the revised version will be published on this page with
+a new effective date. The change history is public in the
+<a href="https://github.com/Rico36/ShortVideos">source repository</a>.</p>
+
+<h2>9. Contact</h2>
+<p>Questions about this policy can be raised as an issue at
+<a href="https://github.com/Rico36/ShortVideos/issues">github.com/Rico36/ShortVideos/issues</a>.</p>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="terms.html">Terms of Service</a>
+  <a href="https://github.com/Rico36/ShortVideos">Source</a>
+</nav>
+
+</div>
+</body>
+</html>

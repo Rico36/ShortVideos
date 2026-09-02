@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CommonHours</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>CommonHours</h1>
+  <p class="lede">A self-hosted tool that publishes the operator's own short-form
+  videos to their own TikTok account.</p>
+</header>
+
+<h2>What it is</h2>
+<p>CommonHours is a small command-line program that a single creator runs on their
+own computer. It takes a video file and a caption from the creator's own machine
+and uploads them to that creator's TikTok account through the official Content
+Posting API.</p>
+
+<p>It is not a service. There is no CommonHours server, no account to sign up for,
+and no shared infrastructure. Each person who uses it runs their own copy on their
+own hardware, authorizes their own TikTok account, and posts only their own videos.</p>
+
+<h2>What it does before it uploads</h2>
+<ul>
+  <li>Checks the video against TikTok's duration, file size, container, codec and
+      frame-rate requirements, so a file that would be rejected never gets sent.</li>
+  <li>Queries the Creator Info endpoint and honours what it returns: the privacy
+      levels available to the account, and whether the creator has disabled
+      comments, duet or stitch. Account settings take priority over the tool's
+      own configuration.</li>
+  <li>Requires the creator to declare, before each post, whether the video is
+      AI-generated or altered, whether it is branded content, and how any music
+      in it is licensed. These are required fields with no defaults.</li>
+  <li>Records each upload locally so a repeated run cannot post the same file twice.</li>
+</ul>
+
+<h2>How your data is handled</h2>
+<div class="card">
+  <p style="margin:0">Everything stays on the machine you run it on. The OAuth
+  token is stored in a local file readable only by your user account. No data is
+  sent anywhere except to TikTok's own API endpoints. There is no analytics, no
+  telemetry, and no third party.</p>
+</div>
+<p>The full detail is in the <a href="privacy.html">privacy policy</a>.</p>
+
+<h2>Source code</h2>
+<p>CommonHours is open source. The complete implementation, including every API
+call it makes, can be read at
+<a href="https://github.com/Rico36/ShortVideos">github.com/Rico36/ShortVideos</a>.</p>
+
+<nav>
+  <a href="privacy.html">Privacy Policy</a>
+  <a href="terms.html">Terms of Service</a>
+  <a href="https://github.com/Rico36/ShortVideos">Source</a>
+</nav>
+
+</div>
+</body>
+</html>

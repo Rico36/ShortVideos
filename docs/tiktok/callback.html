@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Authorization code — CommonHours</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Authorization code</h1>
+  <p class="lede">Copy this into the terminal where CommonHours is waiting.</p>
+</header>
+
+<div id="out"></div>
+
+<nav>
+  <a href="../index.html">Home</a>
+  <a href="../privacy.html">Privacy Policy</a>
+  <a href="../terms.html">Terms of Service</a>
+</nav>
+
+<script>
+// This page is static. The authorization code arrives in the URL, is shown here
+// for you to paste, and is never sent anywhere - there is no server behind it.
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var code = params.get("code");
+  var error = params.get("error");
+  var description = params.get("error_description");
+  var out = document.getElementById("out");
+
+  function el(tag, text, cls) {
+    var node = document.createElement(tag);
+    if (text) node.textContent = text;
+    if (cls) node.className = cls;
+    return node;
+  }
+
+  if (error) {
+    out.appendChild(el("h2", "Authorization failed"));
+    out.appendChild(el("p", description || error));
+    out.appendChild(el("p", "Close this tab and run the authorize command again."));
+    return;
+  }
+
+  if (!code) {
+    out.appendChild(el("h2", "Nothing to show"));
+    out.appendChild(el("p",
+      "This page displays the authorization code that TikTok adds to the URL " +
+      "after you approve access. Open it by completing the authorization flow, " +
+      "not directly."));
+    return;
+  }
+
+  var box = el("div", code, "code-box");
+  box.id = "code";
+  out.appendChild(box);
+
+  var button = el("button", "Copy code");
+  button.addEventListener("click", function () {
+    navigator.clipboard.writeText(code).then(
+      function () { button.textContent = "Copied"; },
+      function () { button.textContent = "Copy failed - select it by hand"; }
+    );
+  });
+  out.appendChild(button);
+
+  var warning = el("div", null, "card");
+  warning.appendChild(el("p",
+    "Treat this code like a password. It can be exchanged once for access to " +
+    "your TikTok account, and it expires within a few minutes. Do not share it " +
+    "or paste it anywhere other than your own terminal."));
+  warning.firstChild.style.margin = "0";
+  out.appendChild(warning);
+})();
+</script>
+
+</div>
+</body>
+</html>
